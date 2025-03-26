@@ -1,37 +1,49 @@
 package ru.georgy.NauJava.model;
 
+import jakarta.persistence.*;
+
 /**
  * Класс, представляющий сущность продукта
  */
+@Entity
+@Table(name = "products")
 public class Product {
     /**
      * Идентификатор продукта
      */
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
     private Long id;
 
     /**
      * Название продукта
      */
+    @Column(name = "name", nullable = false)
     private String name;
 
     /**
      * Калории продукта на 100гр
      */
+    @Column(name = "calories", nullable = false)
     private double calories;
 
     /**
      * Белки продукта на 100гр
      */
+    @Column(name = "proteins", nullable = false)
     private double proteins;
 
     /**
      * Углеводы продукта на 100гр
      */
+    @Column(name = "carbs", nullable = false)
     private double carbs;
 
     /**
      * Жиры продукта на 100гр
      */
+    @Column(name = "fats", nullable = false)
     private double fats;
 
     public Long getId() {

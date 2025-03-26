@@ -34,12 +34,12 @@ public class ProductServiceImpl implements ProductService{
         product.setProteins(proteins);
         product.setCarbs(carbs);
         product.setFats(fats);
-        productRepository.create(product);
+        productRepository.save(product);
     }
 
     @Override
     public Product findById(Long id) {
-        Optional<Product> productOptional = productRepository.read(id);
+        Optional<Product> productOptional = productRepository.findById(id);
         if(productOptional.isEmpty())
             throw new IllegalArgumentException("Продукт с ID " + id + " не найден");
         return productOptional.get();
@@ -47,42 +47,42 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public void deleteById(Long id) {
-        productRepository.delete(id);
+        productRepository.deleteById(id);
     }
 
     @Override
     public void updateName(Long id, String name) {
         Product product = findById(id);
         product.setName(name);
-        productRepository.update(product);
+        productRepository.save(product);
     }
 
     @Override
     public void updateCalories(Long id, int newCalories) {
         Product product = findById(id);
         product.setCalories(newCalories);
-        productRepository.update(product);
+        productRepository.save(product);
     }
 
     @Override
     public void updateProteins(Long id, int newProtein) {
         Product product = findById(id);
         product.setProteins(newProtein);
-        productRepository.update(product);
+        productRepository.save(product);
     }
 
     @Override
     public void updateCarbs(Long id, int newCarbs) {
         Product product = findById(id);
         product.setCarbs(newCarbs);
-        productRepository.update(product);
+        productRepository.save(product);
     }
 
     @Override
     public void updateFats(Long id, int newFats) {
         Product product = findById(id);
         product.setFats(newFats);
-        productRepository.update(product);
+        productRepository.save(product);
     }
 
     @PostConstruct
