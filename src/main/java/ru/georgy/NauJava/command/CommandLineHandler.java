@@ -2,7 +2,6 @@ package ru.georgy.NauJava.command;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
@@ -16,7 +15,7 @@ public class CommandLineHandler {
         this.commandProcessor = commandProcessor;
     }
 
-    @Bean
+    //@Bean
     public CommandLineRunner commandScanner()
     {
         return args ->
