@@ -1,6 +1,6 @@
 package ru.georgy.NauJava.repository;
 
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,6 +8,8 @@ import ru.georgy.NauJava.model.*;
 
 import java.util.List;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Класс для тестирования методов репозитория рецептов.
@@ -27,6 +29,36 @@ class RecipeRepositoryTest {
     @Autowired
     private UserRepository userRepository;
     
+    private User user;
+    private Product product1; 
+    private Product product2; 
+    private Product product3; 
+    private Recipe recipe1;   
+    private Recipe recipe2;   
+    private Recipe recipe3;   
+    
+    @BeforeEach
+    void setUp() {
+        user = createTestUser();
+        
+        product1 = createTestProduct("Яйца", 157.0, 12.7, 0.9, 11.0);
+        product2 = createTestProduct("Молоко", 63.0, 3.1, 4.7, 2.5);
+        product3 = createTestProduct("Мука", 334.0, 10.3, 1.1, 70.6);
+        
+        recipe1 = createTestRecipe(user, "Омлет");
+        recipe2 = createTestRecipe(user, "Блины");
+        recipe3 = createTestRecipe(user, "Фриттата");
+        
+        addProductToRecipe(recipe1, product1, 120.0);
+        addProductToRecipe(recipe1, product2, 50.0);
+        
+        addProductToRecipe(recipe2, product2, 200.0);
+        addProductToRecipe(recipe2, product3, 100.0);
+        
+        addProductToRecipe(recipe3, product1, 180.0);
+        addProductToRecipe(recipe3, product2, 30.0);
+    }
+    
     /**
      * Тестирует поиск рецептов, содержащих определенный продукт и имеющих 
      * ограниченную калорийность, с использованием JPQL запроса.
@@ -39,38 +71,18 @@ class RecipeRepositoryTest {
      */
     @Test
     void testFindRecipesWithProductAndLowerCalories() {
-        User user = createTestUser();
-        
-        Product product1 = createTestProduct("Яйца", 157.0, 12.7, 0.9, 11.0);
-        Product product2 = createTestProduct("Молоко", 63.0, 3.1, 4.7, 2.5);
-        Product product3 = createTestProduct("Мука", 334.0, 10.3, 1.1, 70.6);
-        
-        Recipe recipe1 = createTestRecipe(user, "Омлет", 350.0, 20.0, 30.0, 15.0, 250.0);
-        Recipe recipe2 = createTestRecipe(user, "Блины", 500.0, 20.0, 30.0, 15.0, 250.0);
-        Recipe recipe3 = createTestRecipe(user, "Фриттата", 420.0, 20.0, 30.0, 15.0, 250.0);
-        
-        addProductToRecipe(recipe1, product1, 120.0);
-        addProductToRecipe(recipe1, product2, 50.0);
-        
-        addProductToRecipe(recipe2, product2, 200.0);
-        addProductToRecipe(recipe2, product3, 100.0);
-        
-        addProductToRecipe(recipe3, product1, 180.0);
-        addProductToRecipe(recipe3, product2, 30.0);
-        
         List<Recipe> foundRecipes = recipeRepository.findRecipesWithProductAndLowerCalories(
-                product1.getId(), 400.0);
+                product1.getId(), 250.0);
         
-        Assertions.assertEquals(1, foundRecipes.size());
-        Assertions.assertTrue(foundRecipes.stream().anyMatch(r -> r.getId().equals(recipe1.getId())));
-        Assertions.assertFalse(foundRecipes.stream().anyMatch(r -> r.getId().equals(recipe2.getId())));
-        Assertions.assertFalse(foundRecipes.stream().anyMatch(r -> r.getId().equals(recipe3.getId())));
+        assertEquals(1, foundRecipes.size());
+        assertTrue(foundRecipes.stream().anyMatch(r -> r.getId().equals(recipe1.getId())));
+        assertFalse(foundRecipes.stream().anyMatch(r -> r.getId().equals(recipe2.getId())));
+        assertFalse(foundRecipes.stream().anyMatch(r -> r.getId().equals(recipe3.getId())));
     }
     
     /**
-     * Тестирует поиск рецептов, содержащих определенный продукт и имеющих 
+     * Тестирует поиск рецептов, содержащих определенный продукт и имеющих
      * ограниченную калорийность, с использованием Criteria API.
-     * <p>
      * Сценарий теста:
      * 1. Создаётся тестовый пользователь
      * 2. Создаются тестовые продукты
@@ -81,32 +93,13 @@ class RecipeRepositoryTest {
      */
     @Test
     void testFindRecipesWithProductAndCalories() {
-        User user = createTestUser();
-        
-        Product product1 = createTestProduct("Яйца", 157.0, 12.7, 0.7, 11.5);
-        Product product2 = createTestProduct("Молоко", 42.0, 2.8, 4.7, 1.0);
-        Product product3 = createTestProduct("Мука", 334.0, 10.3, 1.1, 70.6);
-        
-        Recipe recipe1 = createTestRecipe(user, "Омлет", 350.0, 20.0, 30.0, 15.0, 250.0);
-        Recipe recipe2 = createTestRecipe(user, "Блины", 500.0, 20.0, 30.0, 15.0, 250.0);
-        Recipe recipe3 = createTestRecipe(user, "Фриттата", 420.0, 20.0, 30.0, 15.0, 250.0);
-        
-        addProductToRecipe(recipe1, product1, 120.0);
-        addProductToRecipe(recipe1, product2, 50.0);
-        
-        addProductToRecipe(recipe2, product2, 200.0);
-        addProductToRecipe(recipe2, product3, 100.0);
-        
-        addProductToRecipe(recipe3, product1, 180.0);
-        addProductToRecipe(recipe3, product2, 30.0);
-        
         List<Recipe> foundRecipes = recipeRepository.findRecipesWithProductAndCalories(
-                product1.getId(), 400.0);
+                product1.getId(), 250.0);
         
-        Assertions.assertEquals(1, foundRecipes.size());
-        Assertions.assertTrue(foundRecipes.stream().anyMatch(r -> r.getId().equals(recipe1.getId())));
-        Assertions.assertFalse(foundRecipes.stream().anyMatch(r -> r.getId().equals(recipe2.getId())));
-        Assertions.assertFalse(foundRecipes.stream().anyMatch(r -> r.getId().equals(recipe3.getId())));
+        assertEquals(1, foundRecipes.size());
+        assertTrue(foundRecipes.stream().anyMatch(r -> r.getId().equals(recipe1.getId())));
+        assertFalse(foundRecipes.stream().anyMatch(r -> r.getId().equals(recipe2.getId())));
+        assertFalse(foundRecipes.stream().anyMatch(r -> r.getId().equals(recipe3.getId())));
     }
     
     /**
@@ -149,22 +142,12 @@ class RecipeRepositoryTest {
      * 
      * @param user пользователь-создатель рецепта
      * @param name название рецепта
-     * @param calories общая калорийность рецепта
-     * @param proteins общее содержание белков в рецепте
-     * @param carbs общее содержание углеводов в рецепте
-     * @param fats общее содержание жиров в рецепте
-     * @param weight общий вес готового блюда
      * @return сохраненный в базе тестовый рецепт
      */
-    private Recipe createTestRecipe(User user, String name, Double calories, Double proteins, Double carbs, Double fats, Double weight) {
+    private Recipe createTestRecipe(User user, String name) {
         Recipe recipe = new Recipe();
         recipe.setName(name);
         recipe.setUser(user);
-        recipe.setTotalCalories(calories);
-        recipe.setTotalProteins(proteins);
-        recipe.setTotalCarbohydrates(carbs);
-        recipe.setTotalFats(fats);
-        recipe.setTotalWeight(weight);
         
         return recipeRepository.save(recipe);
     }

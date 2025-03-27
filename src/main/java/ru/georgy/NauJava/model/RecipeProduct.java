@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 
 /**
  * Сущность, представляющая связь между рецептом и продуктом.
@@ -18,24 +20,27 @@ public class RecipeProduct {
      */
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private Long id;
 
     /**
      * Рецепт, к которому относится продукт.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipe_id", nullable = false)
     private Recipe recipe;
 
     /**
      * Продукт, используемый в рецепте.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     /**
      * Количество продукта, используемого в рецепте (в граммах).
      */
-    @Column(nullable = false)
+    @Column(name = "quantity", nullable = false)
     private Double quantity;
 
     public Long getId() {

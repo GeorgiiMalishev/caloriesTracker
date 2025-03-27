@@ -13,25 +13,27 @@ public class MealProduct {
      */
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private Long id;
 
     /**
      * Приём пищи, к которому относится продукт.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "meal_id", nullable = false)
     private Meal meal;
 
     /**
      * Продукт, который был потреблён.
      */
-    @ManyToOne
-    @JoinColumn(name = "product_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     /**
      * Количество потреблённого продукта (в граммах).
      */
-    @Column(nullable = false)
+    @Column(name = "quantity", nullable = false)
     private Double quantity;
 
     public Long getId() {

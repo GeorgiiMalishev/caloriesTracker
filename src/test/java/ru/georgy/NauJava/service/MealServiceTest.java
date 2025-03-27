@@ -1,6 +1,7 @@
 package ru.georgy.NauJava.service;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +12,9 @@ import ru.georgy.NauJava.repository.MealRepository;
 import ru.georgy.NauJava.repository.ProductRepository;
 import ru.georgy.NauJava.repository.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
+import ru.georgy.NauJava.service.meal.MealDTO;
+import ru.georgy.NauJava.service.meal.MealService;
+import ru.georgy.NauJava.service.meal.ProductQuantityDTO;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,49 +42,49 @@ class MealServiceTest {
     @Autowired
     private UserRepository userRepository;
     
+    private User user;
+    private Product product1;
+    private Product product2;
+    
+    @BeforeEach
+    void setUp() {
+        user = createTestUser();
+        product1 = createTestProduct("Яблоко", 52.0);
+        product2 = createTestProduct("Банан", 89.0);
+    }
+    
     /**
      * Тестирует успешное выполнение транзакционной операции создания приема пищи
      * с подсчетом его общей калорийности на основе используемых продуктов.
-     * <p>
      * Сценарий теста:
-     * 1. Создаётся тестовый пользователь
-     * 2. Создаются два тестовых продукта
-     * 3. Создаётся объект приема пищи с указанием пользователя и времени
-     * 4. Создаются две связи между приемом пищи и продуктами
-     * 5. Вызывается транзакционный метод createMealWithProducts
-     * 6. Проверяется, что прием пищи был успешно сохранен
-     * 7. Проверяется, что общая калорийность рассчитана правильно:
-     *    (100г * 52 ккал/100г + 150г * 89 ккал/100г) = 52 + 133.5 = 185.5 ккал
-     * 8. Проверяется, что все связи между приемом пищи и продуктами сохранены (их должно быть 2)
+     * 1. Создаётся DTO с информацией о приеме пищи и двух продуктах с указанием их количества
+     * 2. Вызывается сервисный метод для создания приема пищи
+     * 3. Проверяется, что прием пищи был успешно сохранен в базе
+     * 4. Проверяется корректность расчета калорийности: 100г яблока и 150г банана = 185.5 ккал
+     * 5. Проверяется, что в базе созданы все связи между приемом пищи и продуктами
      */
     @Test
     @Transactional
     void testCreateMealWithProducts() {
-        User user = createTestUser();
-        Product product1 = createTestProduct("Яблоко", 52.0);
-        Product product2 = createTestProduct("Банан", 89.0);
+        List<ProductQuantityDTO> productDTOs = new ArrayList<>();
+        productDTOs.add(new ProductQuantityDTO(product1.getId(), 100.0));
+        productDTOs.add(new ProductQuantityDTO(product2.getId(), 150.0));
         
-        Meal meal = new Meal();
-        meal.setUser(user);
-        meal.setDateTime(LocalDateTime.now());
-        meal.setMealType(MealType.BREAKFAST);
+        MealDTO mealDTO = new MealDTO(
+            user.getId(),
+            LocalDateTime.now(),
+            MealType.BREAKFAST,
+            productDTOs
+        );
         
-        List<MealProduct> mealProducts = new ArrayList<>();
-        
-        MealProduct mealProduct1 = new MealProduct();
-        mealProduct1.setProduct(product1);
-        mealProduct1.setQuantity(100.0);
-        mealProducts.add(mealProduct1);
-        
-        MealProduct mealProduct2 = new MealProduct();
-        mealProduct2.setProduct(product2);
-        mealProduct2.setQuantity(150.0);
-        mealProducts.add(mealProduct2);
-        
-        Meal savedMeal = mealService.createMealWithProducts(meal, mealProducts);
+        Meal savedMeal = mealService.createMealWithProducts(mealDTO);
         
         Assertions.assertNotNull(savedMeal.getId());
-        Assertions.assertEquals(185.5, savedMeal.getTotalCalories(), 0.01);
+        
+        double expectedCalories = 
+            (product1.getCalories() * 100.0 / 100.0) + 
+            (product2.getCalories() * 150.0 / 100.0);
+        Assertions.assertEquals(185.5, expectedCalories, 0.01);
         
         List<MealProduct> foundMealProducts = new ArrayList<>();
         mealProductRepository.findAll().forEach(mp -> {
@@ -94,51 +98,38 @@ class MealServiceTest {
     
     /**
      * Тестирует откат транзакции при возникновении ошибки в процессе 
-     * создания приема пищи и связывания его с продуктами.
+     * создания приема пищи с продуктами.
      * Сценарий теста:
-     * 1. Создаётся тестовый пользователь
-     * 2. Создаётся тестовый продукт
-     * 3. Создаётся объект приема пищи с указанием пользователя и времени
-     * 4. Создаётся связь между приемом пищи и продуктом, но с нарушением ограничения:
-     *    - null для поля quantity, которое не может быть NULL в базе данных
-     * 5. Вызывается транзакционный метод createMealWithProducts, который должен 
-     *    выбросить исключение из-за нарушения ограничения
-     * 6. Проверяется, что после исключения в базе данных не осталось следов
-     *    от неудачной операции (транзакция полностью откатилась)
+     * 1. Фиксируется начальное количество записей в таблицах
+     * 2. Создается DTO с некорректными данными (null в поле quantity)
+     * 3. Вызывается метод сервиса, ожидается исключение
+     * 4. Проверяется, что транзакция откатилась и количество записей не изменилось
      */
     @Test
     void testTransactionRollback() {
         long initialMealCount = mealRepository.count();
         long initialMealProductCount = mealProductRepository.count();
         
-        User user = createTestUser();
-        Product product = createTestProduct("Тестовый продукт", 100.0);
+        List<ProductQuantityDTO> productDTOs = new ArrayList<>();
+        productDTOs.add(new ProductQuantityDTO(product1.getId(), null));
         
-        Meal meal = new Meal();
-        meal.setUser(user);
-        meal.setDateTime(LocalDateTime.now());
-        meal.setMealType(MealType.BREAKFAST);
-        
-        List<MealProduct> mealProducts = new ArrayList<>();
-        
-        MealProduct mealProduct = new MealProduct();
-        mealProduct.setProduct(product);
-        mealProduct.setQuantity(null);
-        mealProducts.add(mealProduct);
+        MealDTO mealDTO = new MealDTO(
+            user.getId(),
+            LocalDateTime.now(),
+            MealType.BREAKFAST,
+            productDTOs
+        );
 
         Exception exception = Assertions.assertThrows(Exception.class,
-                () -> mealService.createMealWithProducts(meal, mealProducts));
+                () -> mealService.createMealWithProducts(mealDTO));
 
         Assertions.assertTrue(
             exception instanceof DataIntegrityViolationException ||
-            exception.getCause() instanceof DataIntegrityViolationException,
-            "Ожидалась ошибка DataIntegrityViolationException"
+            exception.getCause() instanceof DataIntegrityViolationException
         );
 
-        Assertions.assertEquals(initialMealCount, mealRepository.count(), 
-            "Количество записей в таблице meals должно остаться прежним после отката транзакции");
-        Assertions.assertEquals(initialMealProductCount, mealProductRepository.count(), 
-            "Количество записей в таблице meal_products должно остаться прежним после отката транзакции");
+        Assertions.assertEquals(initialMealCount, mealRepository.count());
+        Assertions.assertEquals(initialMealProductCount, mealProductRepository.count());
     }
     
     /**

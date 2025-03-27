@@ -13,36 +13,37 @@ public class Product {
      */
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private Long id;
 
     /**
      * Название продукта
      */
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     /**
      * Калории продукта на 100гр
      */
-    @Column(nullable = false)
+    @Column(name = "calories", nullable = false)
     private double calories;
 
     /**
      * Белки продукта на 100гр
      */
-    @Column(nullable = false)
+    @Column(name = "proteins", nullable = false)
     private double proteins;
 
     /**
      * Углеводы продукта на 100гр
      */
-    @Column(nullable = false)
+    @Column(name = "carbs", nullable = false)
     private double carbs;
 
     /**
      * Жиры продукта на 100гр
      */
-    @Column(nullable = false)
+    @Column(name = "fats", nullable = false)
     private double fats;
 
     public Long getId() {

@@ -17,11 +17,12 @@ public interface RecipeRepository extends CrudRepository<Recipe, Long>, RecipeRe
      * @param maxCalories максимальная общая калорийность
      * @return список рецептов
      */
-    @Query("SELECT DISTINCT r FROM Recipe r " +
+    @Query("SELECT r FROM Recipe r " +
            "JOIN RecipeProduct rp ON rp.recipe = r " +
            "WHERE rp.product.id = :productId " +
-           "AND r.totalCalories < :maxCalories " +
-           "ORDER BY r.totalCalories")
+           "GROUP BY r " +
+           "HAVING SUM(rp.product.calories * rp.quantity / 100) < :maxCalories " +
+           "ORDER BY SUM(rp.product.calories * rp.quantity / 100)")
     List<Recipe> findRecipesWithProductAndLowerCalories(
             @Param("productId") Long productId, 
             @Param("maxCalories") Double maxCalories);

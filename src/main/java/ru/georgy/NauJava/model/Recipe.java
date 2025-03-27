@@ -6,6 +6,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 
 /**
  * Сущность, представляющая рецепт блюда.
@@ -18,49 +22,27 @@ public class Recipe {
      */
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private Long id;
 
     /**
      * Название рецепта.
      */
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     /**
      * Пользователь, создавший рецепт.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     /**
-     * Общая калорийность блюда.
+     * Продукты, используемые в рецепте.
      */
-    @Column(name = "total_calories")
-    private Double totalCalories;
-
-    /**
-     * Общее содержание белков в блюде (в граммах).
-     */
-    @Column(name = "total_proteins")
-    private Double totalProteins;
-
-    /**
-     * Общее содержание углеводов в блюде (в граммах).
-     */
-    @Column(name = "total_carbohydrates")
-    private Double totalCarbohydrates;
-
-    /**
-     * Общее содержание жиров в блюде (в граммах).
-     */
-    @Column(name = "total_fats")
-    private Double totalFats;
-
-    /**
-     * Общий вес блюда (в граммах).
-     */
-    @Column(name = "total_weight")
-    private Double totalWeight;
+    @OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
+    private List<RecipeProduct> recipeProducts;
 
     public Long getId() {
         return id;
@@ -86,43 +68,11 @@ public class Recipe {
         this.user = user;
     }
 
-    public Double getTotalCalories() {
-        return totalCalories;
+    public List<RecipeProduct> getRecipeProducts() {
+        return recipeProducts;
     }
 
-    public void setTotalCalories(Double totalCalories) {
-        this.totalCalories = totalCalories;
-    }
-
-    public Double getTotalProteins() {
-        return totalProteins;
-    }
-
-    public void setTotalProteins(Double totalProteins) {
-        this.totalProteins = totalProteins;
-    }
-
-    public Double getTotalCarbohydrates() {
-        return totalCarbohydrates;
-    }
-
-    public void setTotalCarbohydrates(Double totalCarbohydrates) {
-        this.totalCarbohydrates = totalCarbohydrates;
-    }
-
-    public Double getTotalFats() {
-        return totalFats;
-    }
-
-    public void setTotalFats(Double totalFats) {
-        this.totalFats = totalFats;
-    }
-
-    public Double getTotalWeight() {
-        return totalWeight;
-    }
-
-    public void setTotalWeight(Double totalWeight) {
-        this.totalWeight = totalWeight;
+    public void setRecipeProducts(List<RecipeProduct> recipeProducts) {
+        this.recipeProducts = recipeProducts;
     }
 }

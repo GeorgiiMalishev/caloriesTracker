@@ -18,18 +18,19 @@ public class User {
      */
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private Long id;
 
     /**
      * Имя пользователя в системе.
      */
-    @Column(nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     /**
      * Электронная почта пользователя.
      */
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     /**
@@ -41,19 +42,19 @@ public class User {
     /**
      * Рост пользователя в сантиметрах.
      */
-    @Column
+    @Column(name = "height")
     private Double height;
 
     /**
      * Вес пользователя в килограммах.
      */
-    @Column
+    @Column(name = "weight")
     private Double weight;
 
     /**
      * Пол пользователя.
      */
-    @Column
+    @Column(name = "gender")
     private Gender gender;
 
     /**

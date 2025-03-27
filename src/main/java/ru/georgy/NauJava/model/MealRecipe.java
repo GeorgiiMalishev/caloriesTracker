@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 
 /**
  * Сущность, представляющая связь между приёмом пищи и рецептом блюда.
@@ -18,31 +20,28 @@ public class MealRecipe {
      */
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private Long id;
 
     /**
      * Приём пищи, к которому относится рецепт.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "meal_id", nullable = false)
     private Meal meal;
 
     /**
      * Рецепт, который был использован в приёме пищи.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipe_id", nullable = false)
     private Recipe recipe;
 
     /**
-     * Размер порции блюда (коэффициент от полного рецепта).
+     * Размер порции блюда в граммах.
      */
     @Column(name = "serving_size", nullable = false)
     private Double servingSize;
-
-    /**
-     * Примечание к связи приёма пищи и рецепта.
-     */
-    @Column
-    private String note;
 
     public Long getId() {
         return id;
@@ -74,13 +73,5 @@ public class MealRecipe {
 
     public void setServingSize(Double servingSize) {
         this.servingSize = servingSize;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
     }
 }

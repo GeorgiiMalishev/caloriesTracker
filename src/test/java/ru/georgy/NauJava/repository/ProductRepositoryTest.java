@@ -1,12 +1,14 @@
 package ru.georgy.NauJava.repository;
 
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.georgy.NauJava.model.Product;
 
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Класс для тестирования методов репозитория продуктов.
@@ -16,6 +18,19 @@ class ProductRepositoryTest {
     
     @Autowired
     private ProductRepository productRepository;
+    
+    private Product protein1;
+    private Product protein2;
+    private Product lowProtein;
+    private Product midProtein;
+    
+    @BeforeEach
+    void setUp() {
+        protein1 = createTestProduct("Куриная грудка", 165.0, 24.0, 0.0, 3.6);
+        protein2 = createTestProduct("Говядина", 250.0, 26.0, 0.0, 19.0);
+        lowProtein = createTestProduct("Яблоко", 52.0, 0.3, 14.0, 0.2);
+        midProtein = createTestProduct("Творог обезжиренный", 71.0, 18.0, 3.3, 0.6);
+    }
     
     /**
      * Тестирует поиск продуктов по содержанию белка и калориям с использованием Query Lookup Strategy.
@@ -27,17 +42,12 @@ class ProductRepositoryTest {
      */
     @Test
     void testFindByProteinsGreaterThanAndCaloriesLessThan() {
-        Product protein1 = createTestProduct("Куриная грудка", 165.0, 24.0, 0.0, 3.6);
-        Product protein2 = createTestProduct("Говядина", 250.0, 26.0, 0.0, 19.0);
-        Product lowProtein = createTestProduct("Яблоко", 52.0, 0.3, 14.0, 0.2);
-        Product midProtein = createTestProduct("Творог обезжиренный", 71.0, 18.0, 3.3, 0.6);
-        
         List<Product> foundProducts = productRepository.findByProteinsGreaterThanAndCaloriesLessThan(20.0, 200.0);
 
-        Assertions.assertTrue(foundProducts.stream().anyMatch(p -> p.getId().equals(protein1.getId())));
-        Assertions.assertFalse(foundProducts.stream().anyMatch(p -> p.getId().equals(protein2.getId())));
-        Assertions.assertFalse(foundProducts.stream().anyMatch(p -> p.getId().equals(lowProtein.getId())));
-        Assertions.assertFalse(foundProducts.stream().anyMatch(p -> p.getId().equals(midProtein.getId())));
+        assertTrue(foundProducts.stream().anyMatch(p -> p.getId().equals(protein1.getId())));
+        assertFalse(foundProducts.stream().anyMatch(p -> p.getId().equals(protein2.getId())));
+        assertFalse(foundProducts.stream().anyMatch(p -> p.getId().equals(lowProtein.getId())));
+        assertFalse(foundProducts.stream().anyMatch(p -> p.getId().equals(midProtein.getId())));
     }
     
     /**
@@ -52,17 +62,12 @@ class ProductRepositoryTest {
      */
     @Test
     void testFindProductsByProteinsAndCalories() {
-        Product protein1 = createTestProduct("Куриная грудка", 165.0, 24.0, 0.0, 3.6);
-        Product protein2 = createTestProduct("Говядина", 250.0, 26.0, 0.0, 19.0);
-        Product lowProtein = createTestProduct("Яблоко", 52.0, 0.3, 14.0, 0.2);
-        Product midProtein = createTestProduct("Творог обезжиренный", 71.0, 18.0, 3.3, 0.6);
-        
         List<Product> foundProducts = productRepository.findProductsByProteinsAndCalories(20.0, 200.0);
         
-        Assertions.assertTrue(foundProducts.stream().anyMatch(p -> p.getId().equals(protein1.getId())));
-        Assertions.assertFalse(foundProducts.stream().anyMatch(p -> p.getId().equals(protein2.getId())));
-        Assertions.assertFalse(foundProducts.stream().anyMatch(p -> p.getId().equals(lowProtein.getId())));
-        Assertions.assertFalse(foundProducts.stream().anyMatch(p -> p.getId().equals(midProtein.getId())));
+        assertTrue(foundProducts.stream().anyMatch(p -> p.getId().equals(protein1.getId())));
+        assertFalse(foundProducts.stream().anyMatch(p -> p.getId().equals(protein2.getId())));
+        assertFalse(foundProducts.stream().anyMatch(p -> p.getId().equals(lowProtein.getId())));
+        assertFalse(foundProducts.stream().anyMatch(p -> p.getId().equals(midProtein.getId())));
     }
     
     /**

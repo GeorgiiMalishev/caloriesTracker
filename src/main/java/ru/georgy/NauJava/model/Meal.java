@@ -1,12 +1,10 @@
 package ru.georgy.NauJava.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Сущность, представляющая приём пищи пользователя.
@@ -20,18 +18,20 @@ public class Meal {
      */
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private Long id;
 
     /**
      * Пользователь, который совершил приём пищи.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     /**
      * Дата и время приёма пищи.
      */
-    @Column(nullable = false)
+    @Column(name = "date_time", nullable = false)
     private LocalDateTime dateTime;
 
     /**
@@ -41,16 +41,16 @@ public class Meal {
     private MealType mealType;
 
     /**
-     * Общая калорийность приёма пищи.
-     */
-    @Column(name = "total_calories")
-    private Double totalCalories;
-
-    /**
      * Примечание к приёму пищи.
      */
-    @Column
+    @Column(name = "note")
     private String note;
+
+    /**
+     * Список продуктов, включенных в данный прием пищи.
+     */
+    @OneToMany(mappedBy = "meal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MealProduct> mealProducts = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -84,19 +84,39 @@ public class Meal {
         this.mealType = mealType;
     }
 
-    public Double getTotalCalories() {
-        return totalCalories;
-    }
-
-    public void setTotalCalories(Double totalCalories) {
-        this.totalCalories = totalCalories;
-    }
-
     public String getNote() {
         return note;
     }
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public List<MealProduct> getMealProducts() {
+        return mealProducts;
+    }
+
+    public void setMealProducts(List<MealProduct> mealProducts) {
+        this.mealProducts = mealProducts;
+    }
+
+    /**
+     * Добавляет продукт к приему пищи.
+     * 
+     * @param mealProduct продукт для добавления
+     */
+    public void addMealProduct(MealProduct mealProduct) {
+        mealProducts.add(mealProduct);
+        mealProduct.setMeal(this);
+    }
+
+    /**
+     * Удаляет продукт из приема пищи.
+     * 
+     * @param mealProduct продукт для удаления
+     */
+    public void removeMealProduct(MealProduct mealProduct) {
+        mealProducts.remove(mealProduct);
+        mealProduct.setMeal(null);
     }
 }
