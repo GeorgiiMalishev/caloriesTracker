@@ -12,7 +12,8 @@ import ru.georgy.NauJava.repository.MealRepository;
 import ru.georgy.NauJava.repository.ProductRepository;
 import ru.georgy.NauJava.repository.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
-import ru.georgy.NauJava.service.meal.MealDTO;
+import ru.georgy.NauJava.service.meal.MealInput;
+import ru.georgy.NauJava.service.meal.MealResponse;
 import ru.georgy.NauJava.service.meal.MealService;
 import ru.georgy.NauJava.service.meal.ProductQuantityDTO;
 
@@ -70,16 +71,16 @@ class MealServiceTest {
         productDTOs.add(new ProductQuantityDTO(product1.getId(), 100.0));
         productDTOs.add(new ProductQuantityDTO(product2.getId(), 150.0));
         
-        MealDTO mealDTO = new MealDTO(
+        MealInput mealInput = new MealInput(
             user.getId(),
             LocalDateTime.now(),
             MealType.BREAKFAST,
             productDTOs
         );
         
-        Meal savedMeal = mealService.createMealWithProducts(mealDTO);
+        MealResponse savedMeal = mealService.createMealWithProducts(mealInput);
         
-        Assertions.assertNotNull(savedMeal.getId());
+        Assertions.assertNotNull(savedMeal.id());
         
         double expectedCalories = 
             (product1.getCalories() * 100.0 / 100.0) + 
@@ -88,7 +89,7 @@ class MealServiceTest {
         
         List<MealProduct> foundMealProducts = new ArrayList<>();
         mealProductRepository.findAll().forEach(mp -> {
-            if (mp.getMeal().getId().equals(savedMeal.getId())) {
+            if (mp.getMeal().getId().equals(savedMeal.id())) {
                 foundMealProducts.add(mp);
             }
         });
@@ -113,7 +114,7 @@ class MealServiceTest {
         List<ProductQuantityDTO> productDTOs = new ArrayList<>();
         productDTOs.add(new ProductQuantityDTO(product1.getId(), null));
         
-        MealDTO mealDTO = new MealDTO(
+        MealInput mealInput = new MealInput(
             user.getId(),
             LocalDateTime.now(),
             MealType.BREAKFAST,
@@ -121,7 +122,7 @@ class MealServiceTest {
         );
 
         Exception exception = Assertions.assertThrows(Exception.class,
-                () -> mealService.createMealWithProducts(mealDTO));
+                () -> mealService.createMealWithProducts(mealInput));
 
         Assertions.assertTrue(
             exception instanceof DataIntegrityViolationException ||

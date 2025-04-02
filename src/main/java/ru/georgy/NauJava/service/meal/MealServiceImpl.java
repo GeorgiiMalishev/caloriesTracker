@@ -5,10 +5,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.georgy.NauJava.model.Meal;
 import ru.georgy.NauJava.model.MealProduct;
+import ru.georgy.NauJava.model.User;
 import ru.georgy.NauJava.repository.MealProductRepository;
 import ru.georgy.NauJava.repository.MealRepository;
 import ru.georgy.NauJava.repository.ProductRepository;
 import ru.georgy.NauJava.repository.UserRepository;
+import ru.georgy.NauJava.mapper.MealMapper;
+import ru.georgy.NauJava.exception.EntityNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,36 +23,36 @@ public class MealServiceImpl implements MealService {
     private final MealProductRepository mealProductRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final MealMapper mealMapper;
     
     @Autowired
     public MealServiceImpl(MealRepository mealRepository, 
                            MealProductRepository mealProductRepository,
                            UserRepository userRepository,
-                           ProductRepository productRepository) {
+                           ProductRepository productRepository,
+                           MealMapper mealMapper) {
         this.mealRepository = mealRepository;
         this.mealProductRepository = mealProductRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+        this.mealMapper = mealMapper;
     }
     
     @Override
     @Transactional
-    public Meal createMealWithProducts(MealDTO mealDTO) {
-        Meal meal = new Meal();
-        meal.setUser(userRepository.findById(mealDTO.userId())
-                .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден")));
-        meal.setDateTime(mealDTO.dateTime());
-        meal.setMealType(mealDTO.mealType());
-        
+    public MealResponse createMealWithProducts(MealInput mealInput) {
+        User user = userRepository.findById(mealInput.userId())
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь", mealInput.userId()));
+        Meal meal = mealMapper.toEntityWithUser(mealInput, user);
         Meal savedMeal = mealRepository.save(meal);
         
         List<MealProduct> mealProducts = new ArrayList<>();
         
-        for (ProductQuantityDTO productDTO : mealDTO.products()) {
+        for (ProductQuantityDTO productDTO : mealInput.products()) {
             MealProduct mealProduct = new MealProduct();
             mealProduct.setMeal(savedMeal);
             mealProduct.setProduct(productRepository.findById(productDTO.productId())
-                    .orElseThrow(() -> new IllegalArgumentException("Продукт не найден")));
+                    .orElseThrow(() -> new EntityNotFoundException("Продукт", productDTO.productId())));
             mealProduct.setQuantity(productDTO.quantity());
             
             mealProductRepository.save(mealProduct);
@@ -58,6 +61,6 @@ public class MealServiceImpl implements MealService {
 
         savedMeal.setMealProducts(mealProducts);
 
-        return mealRepository.save(savedMeal);
+        return mealMapper.toResponse(mealRepository.save(savedMeal));
     }
 } 

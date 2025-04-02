@@ -1,10 +1,12 @@
 package ru.georgy.NauJava.repository;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import ru.georgy.NauJava.model.Product;
 
 import java.util.List;
 
+@RepositoryRestResource(path = "products")
 public interface ProductRepository extends CrudRepository<Product, Long>, ProductRepositoryCustom {
     
     /**

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Product List</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Список продуктов</h1>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Калории</th>
+            <th>Белки</th>
+            <th>Углеводы</th>
+            <th>Жиры</th>
+        </tr>
+        <tr th:each="product : ${products}">
+            <td th:text="${product.id}"></td>
+            <td th:text="${product.name}"></td>
+            <td th:text="${product.calories + ' ккал'}"></td>
+            <td th:text="${product.proteins + ' г'}"></td>
+            <td th:text="${product.carbs + ' г'}"></td>
+            <td th:text="${product.fats + ' г'}"></td>
+        </tr>
+    </table>
+</body>
+</html>
