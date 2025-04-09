@@ -1,9 +1,10 @@
-package ru.georgy.NauJava.service;
+package ru.georgy.NauJava.service.product;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.georgy.NauJava.config.Config;
+import ru.georgy.NauJava.mapper.ProductMapper;
 import ru.georgy.NauJava.model.Product;
 import ru.georgy.NauJava.repository.ProductRepository;
 
@@ -13,11 +14,13 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService{
     private final ProductRepository productRepository;
     private final Config config;
+    private final ProductMapper productMapper;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, Config config) {
+    public ProductServiceImpl(ProductRepository productRepository, Config config, ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.config = config;
+        this.productMapper = productMapper;
     }
 
     @Override
@@ -83,6 +86,12 @@ public class ProductServiceImpl implements ProductService{
         Product product = findById(id);
         product.setFats(newFats);
         productRepository.save(product);
+    }
+
+    @Override
+    public Product createProduct(ProductInput productInput) {
+        Product product = productMapper.toEntity(productInput);
+        return productRepository.save(product);
     }
 
     @PostConstruct

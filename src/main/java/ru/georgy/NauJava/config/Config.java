@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -27,7 +26,6 @@ public class Config {
     public List<Product> productContainer() {
         return new ArrayList<>();
     }
-
     public String getAppVersion() {
         return appVersion;
     }

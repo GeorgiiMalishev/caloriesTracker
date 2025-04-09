@@ -1,23 +1,27 @@
 package ru.georgy.NauJava.controller;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.georgy.NauJava.model.Product;
 import ru.georgy.NauJava.repository.ProductRepository;
+import ru.georgy.NauJava.service.product.ProductInput;
+import ru.georgy.NauJava.service.product.ProductService;
 
 import java.util.List;
 
-@RestController("api/products")
+@RestController
+@RequestMapping("api/products")
 public class ProductRestController {
 
     private final ProductRepository productRepository;
+    private final ProductService productService;
 
     @Autowired
-    public ProductRestController(ProductRepository productRepository) {
+    public ProductRestController(ProductRepository productRepository, ProductService productService) {
         this.productRepository = productRepository;
+        this.productService = productService;
     }
 
     @GetMapping
@@ -26,5 +30,10 @@ public class ProductRestController {
             @RequestParam @NotNull(message = "Максимальное значение калорий должно быть указано") Double maxCalories) {
 
         return productRepository.findProductsByProteinsAndCalories(minProteins, maxCalories);
+    }
+
+    @PostMapping
+    public Product createProduct(@Valid @RequestBody ProductInput productInput){
+        return productService.createProduct(productInput);
     }
 }

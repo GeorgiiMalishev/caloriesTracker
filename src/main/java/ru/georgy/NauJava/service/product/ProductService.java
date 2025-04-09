@@ -1,4 +1,4 @@
-package ru.georgy.NauJava.service;
+package ru.georgy.NauJava.service.product;
 
 import ru.georgy.NauJava.model.Product;
 
@@ -72,4 +72,6 @@ public interface ProductService {
      * @throws IllegalArgumentException если продукт не найден
      */
     void updateFats(Long id, int newFats);
+
+    Product createProduct(ProductInput productInput);
 }
