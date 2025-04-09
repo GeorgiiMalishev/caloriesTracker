@@ -1,11 +1,10 @@
 package ru.georgy.NauJava.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
+import java.util.Set;
 
 /**
  * Сущность, представляющая пользователя системы.
@@ -62,6 +61,15 @@ public class User {
      */
     @Column(name = "birth_date")
     private LocalDate birthDate;
+
+    /**
+     * Роли пользователя
+     */
+    @ElementCollection()
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    @Column(name = "roles")
+    private Set<Role> roles;
 
     public Long getId() {
         return id;
@@ -125,5 +133,13 @@ public class User {
 
     public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
+    }
+
+    public @NotNull Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(@NotNull Set<Role> roles) {
+        this.roles = roles;
     }
 }

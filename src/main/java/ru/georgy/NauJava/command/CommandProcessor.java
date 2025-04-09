@@ -2,7 +2,7 @@ package ru.georgy.NauJava.command;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.georgy.NauJava.service.ProductService;
+import ru.georgy.NauJava.service.product.ProductService;
 
 @Component
 public class CommandProcessor {
