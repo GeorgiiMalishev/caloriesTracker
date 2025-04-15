@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Отчет</title>
+    <link rel="stylesheet" href="/css/productList.css">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<div class="container">
+    <h1>Отчет</h1>
+    <table>
+        <tr><th>Пользователей</th><td th:text="${userCount}"></td></tr>
+        <tr><th>Время подсчета пользователей (мс)</th><td th:text="${userTime}"></td></tr>
+        <tr><th>Время поиска продуктов (мс)</th><td th:text="${productTime}"></td></tr>
+        <tr><th>Общее время (мс)</th><td th:text="${totalTime}"></td></tr>
+    </table>
+
+    <h2>Список продуктов</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th><th>Название</th><th>Калории</th><th>Белки</th><th>Углеводы</th><th>Жиры</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${products}">
+            <td th:text="${p.id}"></td>
+            <td th:text="${p.name}"></td>
+            <td th:text="${p.calories + ' ккал'}"></td>
+            <td th:text="${p.proteins + ' г'}"></td>
+            <td th:text="${p.carbs + ' г'}"></td>
+            <td th:text="${p.fats + ' г'}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -115,6 +115,102 @@ tr:hover {
     background-color: #2980b9;
 }
 
+/* Для кнопки обновить в отчетах */
+.refresh-btn {
+    background-color: #ffc107;
+    color: #222;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-left: 5px;
+}
+
+.refresh-btn:hover {
+    background-color: #e0a800;
+}
+
+/* Кнопка удалить для отчета */
+.delete-btn {
+    background: url('data:image/svg+xml;utf8,<svg fill="%23dc3545" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-4.5l-1-1M18 7H6v12a2 2 0 002 2h8a2 2 0 002-2V7z"/></svg>') no-repeat center center;
+    background-size: 20px 20px;
+    border: none;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background 0.2s;
+    margin-left: 5px;
+    background-color: transparent;
+    text-indent: -9999px;
+    overflow: hidden;
+}
+
+.delete-btn:hover {
+    background-color: #ffeaea;
+}
+
+/* Кнопка обновить список */
+.refresh-list-btn {
+    padding: 0;
+    border: none;
+    background: transparent;
+    vertical-align: middle;
+    margin-bottom: 10px;
+}
+
+.refresh-list-btn svg {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px;
+    min-height: 40px;
+    max-width: 40px;
+    max-height: 40px;
+    display: block;
+}
+
+.refresh-list-btn:hover {
+    background-color: #117a8b;
+}
+
+/* Цвета для статусов отчета */
+.status-created {
+    background-color: #ffe082 !important;
+    color: #7d5c00 !important;
+    font-weight: bold;
+}
+
+.status-ready {
+    background-color: #b9f6ca !important;
+    color: #00695c !important;
+    font-weight: bold;
+}
+
+.status-error {
+    background-color: #ff8a80 !important;
+    color: #b71c1c !important;
+    font-weight: bold;
+}
+
+/* Ограничение высоты и скролл для большого списка продуктов */
+.product-list {
+    margin: 0;
+    padding-left: 16px;
+    list-style: disc inside;
+    font-size: 0.95em;
+    max-height: 120px;
+    overflow-y: auto;
+    background: #f7f7f7;
+    border-radius: 4px;
+}
+
+.product-list li {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 /* Modal styles */
 .modal {
     display: none;
@@ -180,4 +276,23 @@ tr:hover {
     outline: none;
     border-color: #3498db;
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+/* Фиксированная высота и ширина строк и ячеек таблицы отчетов */
+#reportsTable tr.report-row {
+    height: 48px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+#reportsTable tr.report-row:hover {
+    background: #f1f5fb;
+}
+#reportsTable td, #reportsTable th {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+}
+#reportsTable td:nth-child(4) {
+    text-align: center;
 }

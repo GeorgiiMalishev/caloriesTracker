@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Детали отчета</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/productList.css">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<!-- NAVBAR START -->
+<nav class="main-navbar">
+    <div class="navbar-container">
+        <ul class="navbar-links">
+            <li><a href="/products/list">Продукты</a></li>
+            <li><a href="/reports">Отчеты</a></li>
+        </ul>
+        <ul class="navbar-actions">
+            <li>
+                <form th:action="@{/logout}" method="POST" style="display: inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="btn logout-btn">Выйти</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- NAVBAR END -->
+<div class="container">
+    <header>
+        <h1 style="display: inline-block; vertical-align: middle;">Отчет №<span th:text="${report.id}"></span></h1>
+        <button class="refresh-btn" title="Обновить" onclick="location.reload()" style="vertical-align: middle;">
+            <img src="/img/refresh.svg" alt="Обновить" width="22" height="22" style="display: block;"/>
+        </button>
+        <a href="/reports" class="btn" style="margin-bottom: 20px;">← К списку отчетов</a>
+    </header>
+
+    <!-- Здесь вставляется HTML-контент отчета -->
+    <div class="report-details" th:utext="${report.content}"></div>
+</div>
+</body>
+</html>

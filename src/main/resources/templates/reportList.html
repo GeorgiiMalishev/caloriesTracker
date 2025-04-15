@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Отчеты</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" href="/css/productList.css">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<!-- NAVBAR START -->
+<nav class="main-navbar">
+    <div class="navbar-container">
+        <ul class="navbar-links">
+            <li><a href="/products/list">Продукты</a></li>
+            <li><a href="/reports">Отчеты</a></li>
+        </ul>
+        <ul class="navbar-actions">
+            <li>
+                <form th:action="@{/logout}" method="POST" style="display: inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="btn logout-btn">Выйти</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- NAVBAR END -->
+<div class="container">
+    <header style="display: flex; align-items: center; gap: 18px;">
+        <h1 style="margin: 0;">Список отчетов</h1>
+        <button class="refresh-btn" title="Обновить" onclick="location.reload()">
+            <img src="/img/refresh.svg" alt="Обновить" width="22" height="22" style="display: block;"/>
+        </button>
+        <div class="header-buttons" style="margin-left: auto;">
+            <button id="createReportBtn" class="btn add-btn">Создать отчет</button>
+        </div>
+    </header>
+
+    <div class="table-container">
+        <table id="reportsTable">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Статус</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- JS will populate -->
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="/js/reportList.js"></script>
+</body>
+</html>
