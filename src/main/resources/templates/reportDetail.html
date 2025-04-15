@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Детали отчета</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/productList.css">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<!-- NAVBAR START -->
+<nav class="main-navbar">
+    <div class="navbar-container">
+        <ul class="navbar-links">
+            <li><a href="/products/list">Продукты</a></li>
+            <li><a href="/reports">Отчеты</a></li>
+        </ul>
+        <ul class="navbar-actions">
+            <li>
+                <form th:action="@{/logout}" method="POST" style="display: inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="btn logout-btn">Выйти</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- NAVBAR END -->
+<div class="container">
+    <header>
+        <h1 style="display: inline-block; vertical-align: middle;">Отчет №<span th:text="${report.id}"></span></h1>
+        <button class="refresh-btn" title="Обновить" onclick="location.reload()" style="vertical-align: middle;">
+            <img src="/img/refresh.svg" alt="Обновить" width="22" height="22" style="display: block;"/>
+        </button>
+        <a href="/reports" class="btn" style="margin-bottom: 20px;">← К списку отчетов</a>
+    </header>
+    <div class="report-details">
+        <table class="detail-table">
+            <tr><th>ID</th><td th:text="${report.id}"></td></tr>
+            <tr><th>Статус</th><td th:text="${report.status}" th:class="${'status-' + report.status.name().toLowerCase()}"></td></tr>
+            <tr><th>Пользователей</th><td th:text="${report.usersCount}"></td></tr>
+            <tr><th>Время подсчета пользователей (мс)</th><td th:text="${report.userCountTimeMs}"></td></tr>
+            <tr><th>Время поиска продуктов (мс)</th><td th:text="${report.productListTimeMs}"></td></tr>
+            <tr><th>Общее время (мс)</th><td th:text="${report.totalReportTimeMs}"></td></tr>
+        </table>
+        <h2 style="margin-top:30px;">Список продуктов</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Калории</th>
+                    <th>Белки</th>
+                    <th>Углеводы</th>
+                    <th>Жиры</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="product : ${report.products}">
+                    <td th:text="${product.id}"></td>
+                    <td th:text="${product.name}"></td>
+                    <td th:text="${product.calories + ' ккал'}"></td>
+                    <td th:text="${product.proteins + ' г'}"></td>
+                    <td th:text="${product.carbs + ' г'}"></td>
+                    <td th:text="${product.fats + ' г'}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
